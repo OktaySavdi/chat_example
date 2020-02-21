@@ -1,0 +1,128 @@
+﻿@page "/chat"
+@model IndexModel
+@{
+    ViewData["Title"] = "Chat page";
+}
+
+<div class="container">
+    <main role="main" class="pb-3">
+        <div class="card" style="max-width:840px;margin:0px auto;">
+            <div class="card-body">
+                <div class="px-4 py-2 chat-box bg-white" id="div-messages"></div>
+            </div>
+            <div class="card-footer bg-white">
+                <form action="#" class="bg-light w-100" id="frm-input">
+                    <div class="row">
+                        <div class="col-4 pr-0">
+                            <select class="form-control-lg w-100 bg-light" id="ddOnlineUsers"></select>
+                        </div>
+                        <div class="col-8">
+                            <div class="input-group">
+                                <input type="text" id="chat-message" placeholder="Type a message" aria-describedby="btn-send-chat-message" class="form-control rounded-0  py-4 bg-light">
+                                <div class="input-group-append">
+                                    <button id="btn-send-chat-message" type="button" class="btn btn-link"><i class="fa fa-paper-plane"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+@section Scripts{
+    <script src="~/custom/chat-signalr/signalr.js"></script>
+    <script src="~/custom/chat/message.js" asp-append-version="true"></script>
+
+    <script>
+        $(function () {
+
+            $('#chat-message').keypress(function (e) {
+                var key = e.which;
+                if (key == 13) {
+                    $("#btn-send-chat-message").click();
+                    return false;
+                }
+            });
+
+
+            $("#btn-send-chat-message").on("click", function (event) {
+                var message = $("#chat-message").val();
+                var to = $("#ddOnlineUsers").val();
+
+                connection.invoke("SendMessageToUser", to, message)
+                    .then(o => {
+                        $("#chat-message").val('');
+
+
+
+
+                        $('#div-messages').append(
+                            `<div class="media  ml-auto mb-3">
+                                                                                                    <div class="media-body">
+                                                                                                        <div class="bg-primary rounded py-2 px-3 mb-2">
+                                                                                                            <p class="text-small mb-0 text-white">${message}</p>
+                                                                                                        </div>
+                                                                                                        <p class="small text-muted">${new Date().toDateString()}</p>
+                                                                                                    </div>
+                                                                                                </div>`);
+
+                    })
+                    .catch(function (err) {
+                        return console.error(err.toString());
+                    });
+
+
+                event.preventDefault();
+            });
+
+            connection.start()
+                .catch(function (err) {
+                    return console.error(err.toString());
+                });
+
+            connection.on("ReceiveMessage", function (message) {
+                console.log("Received " + message);
+                var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+                $('#div-messages').append(
+                    `<div class="media mb-3">
+                                                                                                        <img src="/images/avatar_user.svg" alt="user" width="50" class="rounded-circle">
+                                                                                                        <div class="media-body ml-3">
+                                                                                                            <div class="bg-light rounded py-2 px-3 mb-2">
+                                                                                                                <p class="text-small mb-0 text-muted">${message}</p>
+                                                                                                            </div>
+                                                                                                            <p class="small text-muted">${new Date().toDateString()}</p>
+                                                                                                        </div>
+                                                                                                    </div>`
+                );
+
+                visibilityChange(comeBackAlerts);
+
+            });
+
+            function refreshConnectionsDropDown(connectionList) {
+                var ddOnlineUsers = $("#ddOnlineUsers");
+                ddOnlineUsers.empty();
+                var connectionIds = connectionList.split(",");
+                for (var i = 0; i < connectionIds.length; i++) {
+                    ddOnlineUsers.append(
+                        `<option value='${connectionIds[i]}'>${(connection.connectionId == connectionIds[i]) === true ? "[Myself] " : ""}${connectionIds[i]}</option>`
+                    );
+                }
+            }
+
+            connection.on("UserConnected", refreshConnectionsDropDown);
+
+            connection.on("UserDisconnected", refreshConnectionsDropDown);
+
+
+
+
+        });
+    </script>
+
+}
+

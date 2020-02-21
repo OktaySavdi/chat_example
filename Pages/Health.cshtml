@@ -1,0 +1,75 @@
+﻿@page "/chat/health"
+@model Chat.Web.HealthModel
+@{
+    ViewData["Title"] = "Health";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+
+
+<div class="container-fluid">
+    <main role="main" class="pb-3">
+        <h1>Health Status</h1>
+        <div class="row row-cols-1 row-cols-md-3">
+            <div class="col mb-4">
+                <div class="card">
+                    <div class="card-header bg-white">
+                        Redis
+                    </div>
+                    <div class="card-body">
+
+                        @if (Model.GetRedisHealthCheck())
+                        {
+                            <span class="text-success">Working</span>
+                        }
+                        else
+                        {
+                            <span class="text-warning">@ViewData["redis_error"]</span>
+                        }
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col mb-4">
+                <div class="card">
+                    <div class="card-header bg-white">
+                        RabbitMQ
+                    </div>
+                    <div class="card-body">
+
+                        @if (Model.GetRabbitMQHealthCheck())
+                        {
+                            <span class="text-success">Working</span>
+                        }
+                        else
+                        {
+                            <span class="text-danger">@ViewData["rabbitmq_error"]</span>
+                        }
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col mb-4">
+                <div class="card">
+                    <div class="card-header bg-white">
+                        Elasticsearch
+                    </div>
+                    <div class="card-body">
+
+                        @if (Model.GetElasticsearchHealthCheck())
+                        {
+                            <span class="text-success">Working</span>
+                        }
+                        else
+                        {
+                            <span class="text-danger">@ViewData["elasticsearch_error"]</span>
+                        }
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>

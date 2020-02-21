@@ -1,0 +1,47 @@
+﻿@page "/chat/messages"
+@model Chat.Web.MessagesModel
+@{
+    ViewData["Title"] = "Messages";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+
+<div class="container-fluid">
+    <main role="main" class="pb-3">
+
+        <h1>Message List</h1>
+
+
+
+        <table class="table table-hover">
+            <caption style="caption-side: top" class="text-right">
+                <form method="post" name="msgForm" asp-page-handler="DeleteMessages">
+                    <button type="submit" class="btn btn-danger">Delete All Messages</button>
+                </form>
+            </caption>
+            <thead>
+                <tr>
+                    <th scope="col">From</th>
+                    <th scope="col">To</th>
+                    <th scope="col">Message</th>
+                    <th scope="col">Created</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var message in Model.Messages)
+                {
+                    <tr>
+                        <td>@message.From</td>
+                        <td>@message.To</td>
+                        <td>@message.Message</td>
+                        <td>@message.Created.ToShortDateString()</td>
+                    </tr>
+                }
+
+
+            </tbody>
+        </table>
+
+
+    </main>
+</div>
