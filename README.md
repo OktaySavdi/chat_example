@@ -5,7 +5,7 @@ we will use the images created here kubernetes_chat_example [Chat-example](https
 
 #  Build
 
-       docker build -t chatproject -f Dockerfile .
+    docker build -t chatproject -f Dockerfile .
 
 # Run
     docker run -d -p 5000:80 --name myapp chatproject
