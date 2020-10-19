@@ -8,7 +8,7 @@ we will use the images created here kubernetes_chat_example [Chat-example](https
     docker build -t chatproject -f Dockerfile .
 
 # Run
-    docker run -d -p 5000:80 --name myapp chatproject
+    docker run -d -p 5000:8080 --name myapp chatproject
 
 # Call
     curl http://localhost:5000/chat
